@@ -1,0 +1,12 @@
+node_modules/
+.pnpm-store/
+.tools/
+work/
+public/
+resources/
+.hugo_build.lock
+playwright-report/
+test-results/
+coverage/
+*.log
+.DS_Store

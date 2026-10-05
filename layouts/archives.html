@@ -1,0 +1,24 @@
+{{ define "main" }}
+{{- $language := partial "page-language.html" . -}}
+{{- $content := partial "page-intro.html" (dict "page" .) -}}
+{{- $pages := where .Site.RegularPages "Section" "in" (.Site.Params.astryx.mainSections | default (slice "posts")) -}}
+{{- $years := "" -}}
+{{- range (where $pages "Draft" false).ByDate.Reverse.GroupByDate "2006" -}}
+  {{- $title := .Key -}}
+  {{- if eq $title "0001" }}{{ $title = i18n "undated" }}{{ end -}}
+  {{- $rows := "" -}}
+  {{- range .Pages -}}
+    {{- $entryLanguage := partial "page-language.html" . -}}
+    {{- $locale := partial "ui-locale.html" . -}}
+    {{- $date := "" -}}
+    {{- if not .Date.IsZero }}{{ $date = printf "<time datetime=\"%s\">%s</time>" (.Date.Format "2006-01-02") (.Date.Format "01.02") }}{{ end -}}
+    {{- $entryContent := printf "<span class=\"archive-date\" lang=\"%s\">%s</span><span class=\"index-link-title\" lang=\"%s\">%s</span>" ($locale | htmlEscape) $date ($entryLanguage | htmlEscape) (.Title | htmlEscape) -}}
+    {{- $rows = printf "%s<li class=\"archive-entry\" lang=\"%s\">%s</li>" $rows ($entryLanguage | htmlEscape) (partial "ui/index-link.html" (dict "label" .Title "href" .RelPermalink "content" ($entryContent | safeHTML))) -}}
+  {{- end -}}
+  {{- $years = printf "%s<section class=\"archive-year\" aria-labelledby=\"year-%s\"><h2 id=\"year-%s\">%s</h2><ul class=\"archive-list\">%s</ul></section>" $years .Key .Key ($title | htmlEscape) $rows -}}
+{{- else -}}
+  {{- $years = printf "<p class=\"empty-state\">%s</p>" (i18n "noPosts" | htmlEscape) -}}
+{{- end -}}
+{{- $content = printf "<div class=\"blog-page archives-page\" lang=\"%s\">%s%s</div>" $language $content $years -}}
+{{ partial "ui/section.html" (dict "content" ($content | safeHTML)) }}
+{{ end }}

@@ -1,0 +1,13 @@
+{{ define "main" }}
+{{- $content := partial "page-intro.html" (dict "page" . "title" (partial "page-title-text.html" .)) -}}
+{{- $items := "" -}}
+{{- range .Pages.ByTitle -}}
+  {{- $language := partial "page-language.html" . -}}
+  {{- $termContent := printf "<span class=\"index-link-title\" lang=\"%s\">%s</span><span class=\"taxonomy-count\">%d</span>" ($language | htmlEscape) (.LinkTitle | htmlEscape) (len .RegularPages) -}}
+  {{- $items = printf "%s<li class=\"taxonomy-item\" lang=\"%s\">%s</li>" $items ($language | htmlEscape) (partial "ui/index-link.html" (dict "label" .LinkTitle "href" .RelPermalink "content" ($termContent | safeHTML))) -}}
+{{- else -}}
+  {{- $items = printf "<li class=\"empty-state\">%s</li>" (i18n "noTags" | htmlEscape) -}}
+{{- end -}}
+{{- $content = printf "<div class=\"blog-page taxonomy-page\">%s<ul class=\"taxonomy-list\">%s</ul></div>" $content $items -}}
+{{ partial "ui/section.html" (dict "content" ($content | safeHTML)) }}
+{{ end }}

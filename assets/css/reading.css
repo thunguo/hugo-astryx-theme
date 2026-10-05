@@ -1,0 +1,80 @@
+.table-scroll-frame {
+  position: relative;
+  min-width: 0;
+  margin-block: var(--spacing-4);
+}
+
+.prose .table-scroll-frame table { margin: 0; }
+
+.code-block[data-overflow-left]::before,
+.code-block[data-overflow-right]::after,
+.table-scroll-frame[data-overflow-left]::before,
+.table-scroll-frame[data-overflow-right]::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset-block: 0;
+  width: 20px;
+  pointer-events: none;
+}
+
+.code-block[data-overflow-left]::before,
+.code-block[data-overflow-right]::after { inset-block-start: var(--code-scroll-top, 44px); }
+
+[data-overflow-left]::before {
+  left: 0;
+  background: linear-gradient(to right, var(--color-background-surface), transparent);
+}
+
+[data-overflow-right]::after {
+  right: 0;
+  background: linear-gradient(to left, var(--color-background-surface), transparent);
+}
+
+.code-block[data-overflow-left]::before {
+  background: linear-gradient(to right, var(--color-syntax-background, var(--color-background-muted)), transparent);
+}
+
+.code-block[data-overflow-right]::after {
+  background: linear-gradient(to left, var(--color-syntax-background, var(--color-background-muted)), transparent);
+}
+
+.prose .footnote-ref {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 16px;
+  min-height: 20px;
+  line-height: 20px;
+  text-underline-offset: 2px;
+}
+
+.prose .footnote-backref {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-1);
+  min-width: 32px;
+  min-height: 32px;
+  padding-inline: var(--spacing-1);
+  font-size: var(--text-supporting-size);
+  line-height: var(--text-supporting-leading);
+}
+
+.reading-target { background: var(--color-accent-muted); border-radius: var(--radius-inner); }
+
+@media (pointer: coarse) {
+  /* A larger hit area leaves the superscript's inline reading geometry intact. */
+  .footnote-ref::before { content: ""; position: absolute; width: 40px; height: 40px; inset: 50% auto auto 50%; transform: translate(-50%, -50%); }
+  .prose .footnote-ref { min-width: 24px; }
+  .prose .footnote-backref { min-height: 40px; }
+}
+
+@media print {
+  .code-block::before,
+  .code-block::after,
+  .table-scroll-frame::before,
+  .table-scroll-frame::after { display: none; }
+  .reading-target { background: transparent; }
+  .footnote-backref { display: none; }
+}

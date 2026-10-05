@@ -1,0 +1,100 @@
+[skipToContent]
+other = "Skip to content"
+[home]
+other = "Home"
+[mainNavigation]
+other = "Main navigation"
+[footerNavigation]
+other = "Footer navigation"
+[search]
+other = "Search"
+[archives]
+other = "Archive"
+[latestPosts]
+other = "Latest writing"
+[allPosts]
+other = "All writing"
+[noPosts]
+other = "No posts yet."
+[tags]
+other = "Tags"
+[tag]
+other = "Tag"
+[noTags]
+other = "No tags yet."
+[pagination]
+other = "Pagination"
+[previousPage]
+other = "Previous"
+[nextPage]
+other = "Next"
+[readingTime]
+one = "{{ .Count }} min read"
+other = "{{ .Count }} min read"
+[updated]
+other = "Updated"
+[undated]
+other = "Undated"
+[articleNavigation]
+other = "Adjacent articles"
+[olderPost]
+other = "Older writing"
+[newerPost]
+other = "Newer writing"
+[tableOfContents]
+other = "Table of contents"
+[onThisPage]
+other = "On this page"
+[translations]
+other = "Other language editions"
+[research]
+other = "Reading and research"
+[photography]
+other = "Life and photography"
+[noNotes]
+other = "No research notes yet."
+[noPhotos]
+other = "No photographs yet."
+[notFoundTitle]
+other = "Page not found."
+[notFoundDescription]
+other = "The link may have changed. Return home or use search."
+[backHome]
+other = "Back home"
+[searchDescription]
+other = "Search original Chinese and English writing, or browse every entry below."
+[searchLabel]
+other = "Keywords"
+[searchPlaceholder]
+other = "Writing, notes, or keywords"
+[searchWithoutJavaScript]
+other = "The complete index is below. You can also use your browser’s Find command (⌘F / Ctrl+F)."
+[searchIndexDescription]
+other = "Writing, research, and photography, newest first."
+
+[filterPosts]
+other = "Filter posts by type"
+
+[breadcrumbs]
+other = "Breadcrumbs"
+
+[postType_article]
+other = "Articles"
+
+[postType_technology]
+other = "Technology"
+
+[postType_technical]
+other = "Technical"
+
+[postType_essay]
+other = "Essays"
+
+[postType_research]
+other = "Research"
+
+[postType_photography]
+other = "Photography"
+
+[postType_note]
+other = "Notes"

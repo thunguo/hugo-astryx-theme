@@ -1,0 +1,53 @@
+{{- $language := partial "page-language.html" . -}}
+{{- $locale := partial "ui-locale.html" . -}}
+{{- $showToc := true -}}
+{{- if isset .Site.Params.astryx "showtoc" }}{{ $showToc = .Site.Params.astryx.showToc }}{{ end -}}
+{{- if isset .Params "showtoc" }}{{ $showToc = .Params.showToc }}{{ end -}}
+{{- $hasToc := and $showToc (strings.Contains .TableOfContents "<li") -}}
+{{- $isArticle := partial "is-indexed.html" . -}}
+{{- $breadcrumbURL := .Site.Home.RelPermalink -}}
+{{- $breadcrumbLabel := i18n "home" -}}
+{{- with .CurrentSection }}{{ if not .IsHome }}{{ $breadcrumbURL = .RelPermalink }}{{ $breadcrumbLabel = .LinkTitle }}{{ end }}{{ end -}}
+{{- $title := partial "ui/page-title.html" (dict "text" .Title "lang" $language) -}}
+{{- $description := "" -}}
+{{- with .Description }}{{ $description = printf "<div class=\"article-description\">%s</div>" (partial "ui/description.html" (dict "text" . "lang" $language)) }}{{ end -}}
+{{- $byline := "" -}}
+{{- if $isArticle -}}
+  {{- $bylineItems := slice -}}
+  {{- with .Params.author | default (partial "site-author.html" .Site) }}{{ $bylineItems = $bylineItems | append (printf "<span class=\"article-author\">%s</span>" (partial "ui/supporting.html" (dict "text" . "lang" $locale))) }}{{ end -}}
+  {{- if not .Date.IsZero }}{{ $bylineItems = $bylineItems | append (printf "<time datetime=\"%s\">%s</time>" (.Date.Format "2006-01-02T15:04:05Z07:00") (partial "ui/supporting.html" (dict "text" (.Date.Format "2006.01.02") "lang" $locale))) }}{{ end -}}
+  {{- if gt .ReadingTime 0 }}{{ $bylineItems = $bylineItems | append (partial "ui/supporting.html" (dict "text" (i18n "readingTime" (dict "Count" .ReadingTime)) "lang" $locale)) }}{{ end -}}
+  {{- range $index, $item := $bylineItems -}}
+    {{- $separator := "" -}}
+    {{- if gt $index 0 }}{{ $separator = "<span class=\"meta-separator\" aria-hidden=\"true\">·</span>" }}{{ end -}}
+    {{- $byline = printf "%s<span class=\"byline-item\">%s%s</span>" $byline $separator $item -}}
+  {{- end -}}
+  {{- if $byline }}{{ $byline = printf "<div class=\"article-byline\" lang=\"%s\">%s</div>" $locale $byline }}{{ end -}}
+{{- end -}}
+{{- $breadcrumbText := .Title -}}
+{{- $breadcrumbLanguage := $language -}}
+{{- if $isArticle }}{{ $breadcrumbText = (partial "post-type.html" .).label }}{{ $breadcrumbLanguage = $locale }}{{ end -}}
+{{- $breadcrumbs := partial "ui/breadcrumbs.html" (dict "label" $breadcrumbLabel "href" $breadcrumbURL "text" $breadcrumbText "textLang" $breadcrumbLanguage) -}}
+{{- $content := printf "<article class=\"blog-article\" lang=\"%s\"><header class=\"article-header\"><div class=\"breadcrumbs\" lang=\"%s\">%s</div><div class=\"article-title\">%s</div>%s%s%s%s" $language $locale $breadcrumbs $title $description $byline (partial "translations.html" .) (partial "ui/divider.html") -}}
+{{- if $hasToc -}}
+  {{- $content = printf "%s<details class=\"article-toc\" lang=\"%s\"><summary><span>%s</span>%s</summary><div lang=\"%s\">%s</div></details>" $content $locale (i18n "onThisPage" | htmlEscape) (partial "ui/toc-icon.html") $language .TableOfContents -}}
+{{- end -}}
+{{- $content = printf "%s</header>" $content -}}
+{{- with .Params.cover }}{{ $content = printf "%s%s" $content (partial "cover.html" (dict "page" $ "path" . "class" "article-cover")) }}{{ end -}}
+{{- $content = printf "%s<div class=\"article-content prose\">%s</div>" $content .Content -}}
+{{- if $isArticle -}}
+  {{- $footer := "" -}}
+  {{- with .GetTerms "tags" -}}
+    {{- $tags := "" -}}
+    {{- range . }}{{ $tags = printf "%s<li><a href=\"%s\" lang=\"%s\">%s</a></li>" $tags .RelPermalink $language (partial "ui/badge.html" (dict "text" .LinkTitle)) }}{{ end -}}
+    {{- $footer = printf "<ul class=\"post-tags\" aria-label=\"%s\">%s</ul>" (i18n "tags" | htmlEscape) $tags -}}
+  {{- end -}}
+  {{- if and (not .Lastmod.IsZero) (not .Date.IsZero) (gt .Lastmod.Unix .Date.Unix) }}{{ $footer = printf "%s<p>%s <time datetime=\"%s\">%s</time></p>" $footer (i18n "updated" | htmlEscape) (.Lastmod.Format "2006-01-02T15:04:05Z07:00") (.Lastmod.Format "2006.01.02") }}{{ end -}}
+  {{- if $footer }}{{ $content = printf "%s<footer class=\"article-footer\" lang=\"%s\">%s%s</footer>" $content $locale (partial "ui/divider.html") $footer }}{{ end -}}
+  {{- $adjacent := "" -}}
+  {{- with .PrevInSection }}{{ $adjacent = printf "%s%s" $adjacent (partial "ui/article-nav-link.html" (dict "href" .RelPermalink "label" (i18n "olderPost") "text" .Title "lang" (partial "page-language.html" .) "uiLang" $locale "direction" "prev")) }}{{ end -}}
+  {{- with .NextInSection }}{{ $adjacent = printf "%s%s" $adjacent (partial "ui/article-nav-link.html" (dict "href" .RelPermalink "label" (i18n "newerPost") "text" .Title "lang" (partial "page-language.html" .) "uiLang" $locale "direction" "next")) }}{{ end -}}
+  {{- if $adjacent }}{{ $content = printf "%s<nav class=\"article-pagination\" aria-label=\"%s\" lang=\"%s\">%s</nav>" $content (i18n "articleNavigation" | htmlEscape) $locale $adjacent }}{{ end -}}
+{{- end -}}
+{{- $content = printf "%s%s</article>" $content (partial "comments.html" .) -}}
+{{ partial "ui/section.html" (dict "content" ($content | safeHTML)) }}

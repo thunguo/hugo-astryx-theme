@@ -1,0 +1,99 @@
+[skipToContent]
+other = "跳至正文"
+[home]
+other = "首页"
+[mainNavigation]
+other = "主导航"
+[footerNavigation]
+other = "页脚导航"
+[search]
+other = "搜索"
+[archives]
+other = "归档"
+[latestPosts]
+other = "最新文章"
+[allPosts]
+other = "全部文章"
+[noPosts]
+other = "暂无文章。"
+[tags]
+other = "标签"
+[tag]
+other = "标签"
+[noTags]
+other = "还没有标签。"
+[pagination]
+other = "分页"
+[previousPage]
+other = "上一页"
+[nextPage]
+other = "下一页"
+[readingTime]
+other = "{{ .Count }} 分钟阅读"
+[updated]
+other = "更新于"
+[undated]
+other = "未注明日期"
+[articleNavigation]
+other = "相邻文章"
+[olderPost]
+other = "上一篇"
+[newerPost]
+other = "下一篇"
+[tableOfContents]
+other = "文章目录"
+[onThisPage]
+other = "本页内容"
+[translations]
+other = "其他语言版本"
+[research]
+other = "阅读与研究"
+[photography]
+other = "日常与摄影"
+[noNotes]
+other = "暂无研究笔记。"
+[noPhotos]
+other = "暂无摄影条目。"
+[notFoundTitle]
+other = "未找到页面。"
+[notFoundDescription]
+other = "链接可能已经改变。请返回首页或使用搜索。"
+[backHome]
+other = "返回首页"
+[searchDescription]
+other = "搜索中文与英文原文，也可以浏览下面的全部条目。"
+[searchLabel]
+other = "关键词"
+[searchPlaceholder]
+other = "文章、笔记或关键词"
+[searchWithoutJavaScript]
+other = "下面是完整文章索引。也可以使用浏览器的页面查找（⌘F / Ctrl+F）。"
+[searchIndexDescription]
+other = "文章、研究与摄影，按日期排列。"
+
+[filterPosts]
+other = "按文章类别筛选"
+
+[breadcrumbs]
+other = "位置导航"
+
+[postType_article]
+other = "文章"
+
+[postType_technology]
+other = "技术"
+
+[postType_technical]
+other = "技术"
+
+[postType_essay]
+other = "随笔"
+
+[postType_research]
+other = "研究"
+
+[postType_photography]
+other = "摄影"
+
+[postType_note]
+other = "笔记"

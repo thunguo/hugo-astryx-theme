@@ -1,0 +1,5 @@
+{{- $indexed := and (not .Draft) (not (in (slice "about" "search" "archives") .Layout)) (not (in (slice "about" "search" "archives") .Section)) -}}
+{{- with .File -}}
+  {{- if in (slice "about" "search" "archives") .ContentBaseName }}{{ $indexed = false }}{{ end -}}
+{{- end -}}
+{{- return $indexed -}}

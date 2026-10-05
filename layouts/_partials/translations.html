@@ -1,0 +1,4 @@
+{{- $peers := where .Site.RegularPages "TranslationKey" .TranslationKey -}}
+{{- if gt (len $peers) 1 -}}
+<nav class="article-translations" aria-label="{{ i18n "translations" }}" lang="{{ partial "ui-locale.html" . }}">{{ range $peers }}{{ if ne .RelPermalink $.RelPermalink }}<a href="{{ .RelPermalink }}" lang="{{ partial "page-language.html" . }}" hreflang="{{ partial "page-language.html" . }}">{{ if strings.HasPrefix (partial "page-language.html" .) "en" }}Read in English{{ else }}阅读中文版{{ end }}</a>{{ end }}{{ end }}</nav>
+{{- end -}}

@@ -1,0 +1,27 @@
+{{- $pages := .RegularPages -}}
+{{- if .IsHome }}{{ $pages = where .Site.RegularPages "Section" "in" (.Site.Params.astryx.mainSections | default (slice "posts")) }}{{ else if eq .Kind "section" }}{{ $pages = .RegularPagesRecursive }}{{ else if eq .Kind "taxonomy" }}{{ $pages = where .Site.RegularPages (printf "Params.%s" .Data.Plural) "!=" nil }}{{ end -}}
+{{- $pages = where $pages "Draft" false -}}
+{{- $pages = $pages.ByDate.Reverse -}}
+{{- $limit := .Site.Config.Services.RSS.Limit -}}
+{{- if ge $limit 0 }}{{ $pages = first $limit $pages }}{{ end -}}
+{{ printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>{{ .Title }}</title>
+    <link>{{ .Permalink }}</link>
+    <description>{{ partial "description.html" . }}</description>
+    <language>{{ partial "ui-locale.html" . }}</language>
+    {{ with .OutputFormats.Get "RSS" }}<atom:link href="{{ .Permalink }}" rel="self" type="application/rss+xml"/>{{ end }}
+    {{ range $pages }}
+    <item>
+      <title>{{ .Title }}</title>
+      <link>{{ .Permalink }}</link>
+      <guid isPermaLink="true">{{ .Permalink }}</guid>
+      <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" }}</pubDate>
+      <dc:language>{{ partial "page-language.html" . }}</dc:language>
+      {{ with .Params.author | default (partial "site-author.html" .Site) }}<dc:creator>{{ . }}</dc:creator>{{ end }}
+      <description>{{ .Description | default (.Summary | plainify) }}</description>
+    </item>
+    {{ end }}
+  </channel>
+</rss>

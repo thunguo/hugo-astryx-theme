@@ -1,0 +1,40 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<script>try{const mode=localStorage.getItem({{ partial "mode-key.html" . | jsonify | safeJS }})||{{ .Site.Params.astryx.defaultMode | default "system" | jsonify | safeJS }};if(mode==="light"||mode==="dark")document.documentElement.dataset.theme=mode;}catch{}</script>
+{{- $title := .Site.Title -}}
+{{- $pageTitle := partial "page-title-text.html" . -}}
+{{- if not .IsHome }}{{ $title = printf "%s · %s" $pageTitle .Site.Title }}{{ end -}}
+{{- $description := partial "description.html" . -}}
+<title>{{ $title }}</title>
+<meta name="description" content="{{ $description }}">
+<link rel="canonical" href="{{ .Permalink }}">
+{{ with partial "logo-url.html" . }}<link rel="icon" href="{{ . }}">{{ end }}
+{{ with partial "site-author.html" .Site }}<meta name="author" content="{{ . }}">{{ end }}
+{{ if eq .Kind "404" }}<meta name="robots" content="noindex, follow">{{ end }}
+<meta property="og:site_name" content="{{ .Site.Title }}">
+<meta property="og:title" content="{{ $pageTitle }}">
+<meta property="og:description" content="{{ $description }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:type" content="{{ if and .IsPage (in (.Site.Params.astryx.mainSections | default (slice "posts")) .Section) }}article{{ else }}website{{ end }}">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ $pageTitle }}">
+<meta name="twitter:description" content="{{ $description }}">
+{{- with .Params.cover -}}
+  {{- $image := partial "image-source.html" (dict "page" $ "path" . "width" 1200) -}}
+<meta property="og:image" content="{{ $image.original | absURL }}">
+{{- end -}}
+{{- if .IsPage -}}
+  {{- range where .Site.RegularPages "TranslationKey" .TranslationKey -}}
+    {{- if ne .RelPermalink $.RelPermalink }}<link rel="alternate" hreflang="{{ partial "page-language.html" . }}" href="{{ .Permalink }}">{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- with .OutputFormats.Get "RSS" }}<link rel="alternate" type="{{ .MediaType.Type }}" title="{{ $.Site.Title }}" href="{{ .Permalink }}">{{ end -}}
+{{- $schema := dict "@context" "https://schema.org" "@type" "WebSite" "name" .Site.Title "url" .Site.Home.Permalink "description" $description "inLanguage" (partial "ui-locale.html" .) -}}
+{{- if and .IsPage (not (in (slice "about" "search" "archives") .Section)) -}}
+  {{- $schema = dict "@context" "https://schema.org" "@type" "Article" "headline" .Title "url" .Permalink "description" $description "inLanguage" (partial "page-language.html" .) "mainEntityOfPage" .Permalink -}}
+  {{- if not .Date.IsZero }}{{ $schema = merge $schema (dict "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00") "dateModified" (.Lastmod.Format "2006-01-02T15:04:05Z07:00")) }}{{ end -}}
+  {{- with .Params.author | default (partial "site-author.html" .Site) }}{{ $schema = merge $schema (dict "author" (dict "@type" "Person" "name" .)) }}{{ end -}}
+{{- end -}}
+<script type="application/ld+json">{{ $schema | jsonify | safeJS }}</script>
+{{ partial "styles.html" . }}

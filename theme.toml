@@ -1,0 +1,10 @@
+name = "Astryx Journal"
+license = "MIT"
+licenselink = ""
+description = "A Hugo journal built with real Astryx components and the official Astryx visual language."
+tags = ["blog", "minimal", "responsive", "dark", "search", "bilingual"]
+features = ["search", "dark mode", "table of contents", "photography", "research notes", "static rendering"]
+min_version = "0.146.0"
+
+[author]
+name = "Astryx Journal contributors"

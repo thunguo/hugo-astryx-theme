@@ -1,0 +1,3 @@
+{{- $language := .Site.Params.astryx.uiLocale | default .Site.Language.Lang -}}
+{{- with .Params.language }}{{ $language = . }}{{ end -}}
+{{- return $language -}}

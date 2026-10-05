@@ -1,0 +1,6 @@
+{{ define "main" }}
+{{- $locale := partial "ui-locale.html" . -}}
+{{- $intro := partial "page-intro.html" (dict "page" . "title" (i18n "notFoundTitle") "description" (i18n "notFoundDescription") "kicker" "404" "lang" $locale) -}}
+{{- $content := printf "<div class=\"empty-state not-found\" lang=\"%s\">%s%s</div>" $locale $intro (partial "ui/button.html" (dict "label" (i18n "backHome") "href" .Site.Home.RelPermalink)) -}}
+{{ partial "ui/section.html" (dict "content" ($content | safeHTML)) }}
+{{ end }}

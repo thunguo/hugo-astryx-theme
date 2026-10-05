@@ -1,0 +1,19 @@
+{{- $indexURL := "index.json" | relURL -}}
+{{- with .Site.Home.OutputFormats.Get "JSON" -}}
+  {{- $indexURL = .RelPermalink -}}
+{{- else -}}
+  {{- $index := resources.FromString "index.json" (partialCached "search-data.html" .Site | jsonify) -}}
+  {{- $indexURL = $index.RelPermalink -}}
+{{- end -}}
+{{- $rssURL := "" -}}
+{{- with .Site.Home.OutputFormats.Get "RSS" }}{{ $rssURL = .RelPermalink }}{{ end -}}
+{{- $galleryURL := "" -}}
+{{- with resources.Get "js/generated/gallery.js" }}{{ $galleryURL = (. | fingerprint "sha384").RelPermalink }}{{ end -}}
+{{- $config := dict "uiLocale" (partial "ui-locale.html" .) "pageLanguage" (partial "page-language.html" .) "searchIndexURL" $indexURL "searchURL" (partial "feature-url.html" (dict "site" .Site "path" "/search")) "modeStorageKey" (partial "mode-key.html" .) "defaultMode" (.Site.Params.astryx.defaultMode | default "system") "siteTitle" .Site.Title "logoURL" (partial "logo-url.html" .) "homeURL" .Site.Home.RelPermalink "navigation" (partial "navigation-data.html" .) "rssURL" $rssURL "galleryURL" $galleryURL -}}
+<div id="astryx-enhancements" lang="{{ partial "ui-locale.html" . }}"></div>
+<script id="astryx-config" type="application/json">{{ $config | jsonify | safeJS }}</script>
+{{- range resources.Match "js/generated/*" }}{{ $published := .RelPermalink }}{{ end -}}
+{{- with resources.Get "js/generated/app.js" -}}
+  {{- $js := . | fingerprint "sha384" -}}
+<script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous"></script>
+{{- end -}}

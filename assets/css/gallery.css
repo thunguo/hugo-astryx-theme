@@ -1,0 +1,40 @@
+/* Core owns the viewer/dialog surfaces, dismissal and reduced-motion behavior. */
+.gallery-feedback-status {
+  display: flex;
+  align-items: flex-start;
+  min-block-size: 80px;
+  color: var(--color-text-secondary);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-leading);
+}
+
+.gallery-feedback-status p {
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+.gallery-feedback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.gallery-feedback-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  flex-basis: 100%;
+  min-width: 0;
+  gap: var(--spacing-2);
+}
+
+.gallery-feedback-next {
+  margin-inline-start: auto;
+}
+
+.gallery-feedback-actions .astryx-button,
+.gallery-feedback-dialog .astryx-dialog-header .astryx-button {
+  min-height: 40px;
+}

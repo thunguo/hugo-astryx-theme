@@ -1,0 +1,9 @@
+{{- with resources.Get "fonts/figtree-latin-variable.woff2" }}{{ $published := .RelPermalink }}<link rel="preload" href="{{ .RelPermalink }}" as="font" type="font/woff2" crossorigin>{{ end -}}
+{{- $styles := slice -}}
+{{- range slice "css/generated/astryx-reset.css" "css/generated/astryx-core.css" "css/generated/astryx-theme.css" "css/theme.css" "css/search.css" "css/code-blocks.css" "css/comments.css" "css/gallery.css" "css/reading.css" -}}
+  {{- with resources.Get . }}{{ $styles = $styles | append . }}{{ end -}}
+{{- end -}}
+{{- with $styles -}}
+  {{- $css := resources.Concat "css/site.css" . | fingerprint "sha384" -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
+{{- end -}}

@@ -1,0 +1,41 @@
+{{- /* Keep the minimum Hugo version at 0.146: the type override on
+     HighlightCodeBlock was added later, so use Highlight with a text fallback. */ -}}
+{{- $language := lower .Type -}}
+{{- $lexer := $language -}}
+{{- $known := transform.CanHighlight $lexer -}}
+{{- if not $known }}{{ $lexer = "text" }}{{ end -}}
+{{- $fixedOptions := slice "noclasses" "linenumbersintable" "hl_inline" "wrapperclass" "guesssyntax" -}}
+{{- $options := dict "noclasses" false "linenumbersintable" false "hl_inline" false "wrapperclass" "highlight" "guesssyntax" false -}}
+{{- range $key, $value := .Options -}}
+  {{- $key = lower $key -}}
+  {{- if not (in $fixedOptions $key) -}}
+    {{- if and (eq $key "linenos") (in (slice "true" "inline" "table") (lower (printf "%v" $value))) }}{{ $value = "inline" }}{{ end -}}
+    {{- $options = merge (dict $key $value) $options -}}
+  {{- end -}}
+{{- end -}}
+{{- /* Older Hugo versions put highlight options for unknown languages in
+     Attributes. Recover only documented highlighter options from that map. */ -}}
+{{- range $key, $value := .Attributes -}}
+  {{- $key = lower $key -}}
+  {{- if in (slice "anchorlinenos" "codefences" "hl_lines" "lineanchors" "linenostart" "linenos" "style" "tabwidth") $key -}}
+    {{- if and (eq $key "linenos") (in (slice "true" "inline" "table") (lower (printf "%v" $value))) }}{{ $value = "inline" }}{{ end -}}
+    {{- $options = merge (dict $key $value) $options -}}
+  {{- end -}}
+{{- end -}}
+{{- $names := dict "js" "JavaScript" "javascript" "JavaScript" "jsx" "JSX" "ts" "TypeScript" "typescript" "TypeScript" "tsx" "TSX" "py" "Python" "python" "Python" "sh" "Shell" "shell" "Shell" "bash" "Bash" "zsh" "Zsh" "go" "Go" "golang" "Go" "rs" "Rust" "rust" "Rust" "rb" "Ruby" "ruby" "Ruby" "java" "Java" "c" "C" "cpp" "C++" "c++" "C++" "cs" "C#" "csharp" "C#" "html" "HTML" "xml" "XML" "css" "CSS" "scss" "SCSS" "sass" "Sass" "json" "JSON" "jsonc" "JSONC" "yaml" "YAML" "yml" "YAML" "toml" "TOML" "ini" "INI" "csv" "CSV" "sql" "SQL" "graphql" "GraphQL" "md" "Markdown" "markdown" "Markdown" "diff" "Diff" "dockerfile" "Dockerfile" "text" "Plain text" "txt" "Plain text" "plaintext" "Plain text" -}}
+{{- $english := hasPrefix (lower (default "zh-CN" .Page.Site.Params.astryx.uiLocale)) "en" -}}
+{{- $label := index $names $language | default .Type -}}
+{{- if or (not $language) (in (slice "text" "txt" "plaintext") $language) -}}
+  {{- $label = cond $english "Plain text" "纯文本" -}}
+{{- end -}}
+{{- $filename := index .Attributes "filename" -}}
+<div class="code-block{{ with index .Attributes "class" }} {{ . }}{{ end }}" data-code-block data-code-language="{{ $language }}" data-code-source="{{ .Inner | jsonify }}"{{ with index .Attributes "id" }} id="{{ . }}"{{ end }}>
+  <div class="code-block-toolbar" lang="{{ cond $english "en" "zh-CN" }}">
+    <div class="code-block-heading">
+      <span class="code-block-language" title="{{ $label }}">{{ $label }}</span>
+      {{- with $filename }}<span class="code-block-filename" title="{{ . }}">{{ . }}</span>{{ end -}}
+    </div>
+    <span class="code-copy-button" data-code-copy-host></span>
+  </div>
+  {{- transform.Highlight .Inner $lexer $options -}}
+</div>

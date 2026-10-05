@@ -1,0 +1,22 @@
+{{- $page := .page -}}
+{{- $path := .path -}}
+{{- $targetWidth := .width | default 1200 -}}
+{{- $result := dict "src" $path "original" $path "width" 0 "height" 0 "srcset" "" -}}
+{{- if not (or (strings.HasPrefix $path "https://") (strings.HasPrefix $path "http://") (strings.HasPrefix $path "//") (strings.HasPrefix $path "data:")) -}}
+  {{- $resource := $page.Resources.GetMatch $path -}}
+  {{- if not $resource }}{{ $resource = resources.Get (strings.TrimPrefix "/" $path) }}{{ end -}}
+  {{- if $resource -}}
+    {{- $result = merge $result (dict "src" $resource.RelPermalink "original" $resource.RelPermalink) -}}
+    {{- if and (eq $resource.ResourceType "image") (in (slice "jpeg" "png" "webp" "gif" "tiff" "bmp") $resource.MediaType.SubType) -}}
+      {{- $image := $resource -}}
+      {{- if gt $image.Width $targetWidth }}{{ $image = $image.Resize (printf "%dx" $targetWidth) }}{{ end -}}
+      {{- $srcset := slice (printf "%s %dw" $image.RelPermalink $image.Width) -}}
+      {{- if gt $image.Width 640 }}{{ $small := $image.Resize "640x" }}{{ $srcset = $srcset | append (printf "%s %dw" $small.RelPermalink $small.Width) }}{{ end -}}
+      {{- $result = merge $result (dict "src" $image.RelPermalink "width" $image.Width "height" $image.Height "srcset" (delimit $srcset ", ")) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $url := strings.TrimPrefix "/" $path | relURL -}}
+    {{- $result = merge $result (dict "src" $url "original" $url) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $result -}}

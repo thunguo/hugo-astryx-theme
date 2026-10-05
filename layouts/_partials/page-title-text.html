@@ -1,0 +1,5 @@
+{{- $title := .Title -}}
+{{- if and (eq .Kind "taxonomy") (not .File) -}}
+  {{- if eq .Data.Plural "tags" }}{{ $title = i18n "tags" }}{{ end -}}
+{{- end -}}
+{{- return $title -}}

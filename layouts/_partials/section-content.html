@@ -1,0 +1,8 @@
+{{- $page := .page -}}
+{{- $pager := $page.Paginate .pages.ByDate.Reverse -}}
+{{- $content := partial "page-intro.html" (dict "page" $page "kicker" .kicker) -}}
+{{- with $page.Content }}{{ $content = printf "%s<div class=\"prose section-intro\">%s</div>" $content . }}{{ end -}}
+{{- $cards := "" -}}
+{{- range $pager.Pages }}{{ $cards = printf "%s%s" $cards (partial "post-card.html" (dict "page" .)) }}{{ else }}{{ $cards = printf "<p class=\"empty-state\">%s</p>" (.empty | default (i18n "noPosts") | htmlEscape) }}{{ end -}}
+{{- $content = printf "<div class=\"blog-index\">%s<div class=\"post-grid\">%s</div>%s</div>" $content $cards (partial "pagination.html" $pager) -}}
+{{ partial "ui/section.html" (dict "content" ($content | safeHTML)) }}

@@ -1,0 +1,5 @@
+{{- $value := .Params.posttype | default "article" | lower -}}
+{{- $label := $value | title -}}
+{{- with i18n (printf "postType_%s" $value) }}{{ $label = . }}{{ end -}}
+{{- with index (.Site.Params.astryx.postTypes | default dict) $value }}{{ $label = . }}{{ end -}}
+{{- return (dict "value" $value "label" $label) -}}

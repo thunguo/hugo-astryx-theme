@@ -1,0 +1,33 @@
+{{ define "main" }}
+{{- $content := partial "page-intro.html" (dict "page" . "kicker" (i18n "photography")) -}}
+{{- with .Content }}{{ $content = printf "%s<div class=\"prose section-intro\">%s</div>" $content . }}{{ end -}}
+{{- $pager := .Paginate .RegularPagesRecursive.ByDate.Reverse -}}
+{{- $isSingle := eq (len $pager.Pages) 1 -}}
+{{- $cards := "" -}}
+{{- range $pager.Pages -}}
+  {{- $photo := . -}}
+  {{- $language := partial "page-language.html" . -}}
+  {{- $imageHTML := "" -}}
+  {{- $cardClass := "photo-card" -}}
+  {{- if $isSingle }}{{ $cardClass = printf "%s is-single" $cardClass }}{{ end -}}
+  {{- with .Params.cover -}}
+    {{- $image := partial "image-source.html" (dict "page" $photo "path" . "width" 1000) -}}
+    {{- $imageHTML = printf "<a class=\"photo-image\" href=\"%s\"><img src=\"%s\" alt=\"%s\"" $photo.RelPermalink ($image.src | htmlEscape) ($photo.Params.coverAlt | default $photo.Title | htmlEscape) -}}
+    {{- if $image.width -}}
+      {{- $sizes := "(max-width: 707px) calc(100vw - 48px), (max-width: 800px) calc((100vw - 68px) / 2), 366px" -}}
+      {{- if $isSingle }}{{ $sizes = "(max-width: 800px) calc(100vw - 48px), 752px" }}{{ end -}}
+      {{- $imageHTML = printf "%s width=\"%d\" height=\"%d\" srcset=\"%s\" sizes=\"%s\"" $imageHTML $image.width $image.height ($image.srcset | htmlEscape) $sizes -}}
+    {{- end -}}
+    {{- $imageHTML = printf "%s loading=\"lazy\" decoding=\"async\"></a>" $imageHTML -}}
+  {{- end -}}
+  {{- $date := "" -}}
+  {{- if not .Date.IsZero }}{{ $date = printf "<time datetime=\"%s\">%s</time>" (.Date.Format "2006-01-02") (partial "ui/supporting.html" (dict "text" (.Date.Format "2006.01.02") "lang" (partial "ui-locale.html" .))) }}{{ end -}}
+  {{- $description := "" -}}
+  {{- with .Description }}{{ $description = partial "ui/text.html" (dict "text" . "lang" $language) }}{{ end -}}
+  {{- $cards = printf "%s<article class=\"%s\" lang=\"%s\">%s<div class=\"photo-caption\"><a href=\"%s\">%s</a>%s%s</div></article>" $cards $cardClass $language $imageHTML .RelPermalink (partial "ui/card-title.html" (dict "text" .Title "lang" $language "feature" false)) $date $description -}}
+{{- else -}}
+  {{- $cards = printf "<p class=\"empty-state\">%s</p>" (i18n "noPhotos" | htmlEscape) -}}
+{{- end -}}
+{{- $content = printf "<div class=\"blog-page photos-page\">%s<div class=\"photos-grid\">%s</div>%s</div>" $content $cards (partial "pagination.html" $pager) -}}
+{{ partial "ui/section.html" (dict "content" ($content | safeHTML)) }}
+{{ end }}

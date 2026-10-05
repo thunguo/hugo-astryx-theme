@@ -1,0 +1,12 @@
+{{- $locale := partial "ui-locale.html" . -}}
+{{- $navigation := partial "navigation-data.html" . -}}
+{{- $items := "" -}}
+{{- range $navigation -}}
+  {{- $items = printf "%s%s" $items (partial "ui/top-nav-item.html" .) -}}
+{{- end -}}
+{{- $items = printf "<div class=\"top-nav-links\">%s</div>" $items -}}
+{{- $searchLabel := i18n "allPosts" -}}
+{{- if .Site.GetPage "/search" }}{{ $searchLabel = i18n "search" }}{{ end -}}
+{{- $actions := printf "<div id=\"astryx-controls\">%s</div>" (partial "ui/search-link.html" (dict "label" $searchLabel "href" (partial "feature-url.html" (dict "site" .Site "path" "/search")))) -}}
+<div lang="{{ $locale }}">{{ partial "ui/top-nav.html" (dict "title" .Site.Title "logoURL" (partial "logo-url.html" .) "homeURL" .Site.Home.RelPermalink "itemsHTML" ($items | safeHTML) "actionsHTML" ($actions | safeHTML) "lang" $locale "navLabel" (i18n "mainNavigation")) }}</div>
+<noscript><nav class="site-no-js-nav" aria-label="{{ i18n "mainNavigation" }}" lang="{{ $locale }}">{{ $items | safeHTML }}</nav></noscript>

@@ -1,0 +1,3 @@
+{{- $url := printf "%s#latest-title" .site.Home.RelPermalink -}}
+{{- with .site.GetPage .path }}{{ $url = .RelPermalink }}{{ end -}}
+{{- return $url -}}

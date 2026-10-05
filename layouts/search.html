@@ -1,0 +1,11 @@
+{{ define "main" }}
+{{- $locale := partial "ui-locale.html" . -}}
+{{- $content := partial "page-intro.html" (dict "page" . "description" (.Description | default (i18n "searchDescription")) "lang" $locale) -}}
+{{- $input := partial "ui/search-input.html" (dict "label" (i18n "searchLabel") "placeholder" (i18n "searchPlaceholder")) -}}
+{{- $button := partial "ui/submit-button.html" (dict "label" (i18n "search")) -}}
+{{- $form := printf "<form class=\"search-form\" id=\"search-form\" role=\"search\" action=\"%s\" method=\"get\" lang=\"%s\"><div class=\"search-input-row\">%s%s</div></form>" .RelPermalink $locale $input $button -}}
+{{- $cards := "" -}}
+{{- range .Site.RegularPages.ByDate.Reverse }}{{ if partial "is-indexed.html" . }}{{ $cards = printf "%s%s" $cards (partial "search-entry.html" (dict "page" .)) }}{{ end }}{{ end -}}
+{{- $content = printf "<div class=\"blog-index search-page\">%s%s<noscript><p>%s</p></noscript><p id=\"search-status\" class=\"search-status\" role=\"status\" aria-live=\"polite\" lang=\"%s\">%s</p><div class=\"search-results\" id=\"search-results\">%s</div></div>" $content $form (i18n "searchWithoutJavaScript" | htmlEscape) $locale (i18n "searchIndexDescription" | htmlEscape) $cards -}}
+{{ partial "ui/section.html" (dict "content" ($content | safeHTML)) }}
+{{ end }}

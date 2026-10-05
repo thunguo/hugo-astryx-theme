@@ -1,0 +1,9 @@
+{{- with . -}}
+  {{- if gt .TotalPages 1 -}}
+<nav class="pagination" aria-label="{{ i18n "pagination" }}">
+  {{ with .Prev }}{{ partial "ui/page-link.html" (dict "label" (i18n "previousPage") "href" .URL "rel" "prev") }}{{ end }}
+  {{ range .Pagers }}{{ partial "ui/page-link.html" (dict "label" (printf "%d" .PageNumber) "href" .URL "current" (eq .PageNumber $.PageNumber)) }}{{ end }}
+  {{ with .Next }}{{ partial "ui/page-link.html" (dict "label" (i18n "nextPage") "href" .URL "rel" "next") }}{{ end }}
+</nav>
+  {{- end -}}
+{{- end -}}

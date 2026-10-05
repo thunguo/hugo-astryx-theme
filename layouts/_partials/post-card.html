@@ -1,0 +1,49 @@
+{{- $page := .page -}}
+{{- $feature := .feature | default false -}}
+{{- $language := partial "page-language.html" $page -}}
+{{- $locale := partial "ui-locale.html" $page -}}
+{{- $type := partial "post-type.html" $page -}}
+{{- $id := printf "post-%s" (substr (crypto.SHA256 $page.RelPermalink) 0 12) -}}
+{{- $cover := "" -}}
+{{- $coverArt := eq ($page.Site.Params.astryx.coverFallback | default "") "art" -}}
+{{- if isset $page.Params "coverart" }}{{ $coverArt = $page.Params.coverArt }}{{ end -}}
+{{- with $page.Params.cover -}}
+  {{- $image := partial "image-source.html" (dict "page" $page "path" . "width" 1400) -}}
+  {{- $cover = printf "<img src=\"%s\" alt=\"%s\"" ($image.src | htmlEscape) ($page.Params.coverAlt | default $page.Title | htmlEscape) -}}
+  {{- if $image.width -}}
+    {{- $sizes := "(max-width: 639px) calc(100vw - 48px), 152px" -}}
+    {{- if $feature }}{{ $sizes = "(max-width: 800px) calc(100vw - 48px), 652px" }}{{ end -}}
+    {{- $cover = printf "%s width=\"%d\" height=\"%d\" srcset=\"%s\" sizes=\"%s\"" $cover $image.width $image.height ($image.srcset | htmlEscape) $sizes -}}
+  {{- end -}}
+  {{- $loading := "loading=\"lazy\"" -}}
+  {{- if $feature }}{{ $loading = "fetchpriority=\"high\"" }}{{ end -}}
+  {{- $cover = printf "%s %s decoding=\"async\">" $cover $loading -}}
+{{- else -}}
+  {{- if $coverArt }}{{ $cover = partial "ui/cover-art.html" (dict "seed" $page.RelPermalink) }}{{ end -}}
+{{- end -}}
+{{- $title := partial "ui/card-title.html" (dict "text" $page.Title "lang" $language "feature" $feature) -}}
+{{- $summary := "" -}}
+{{- with $page.Description | default ($page.Summary | plainify) }}{{ $summary = printf "<div class=\"post-summary\">%s</div>" (partial "ui/text.html" (dict "text" (. | plainify | htmlUnescape | truncate 180) "lang" $language)) }}{{ end -}}
+{{- $date := partial "ui/supporting.html" (dict "text" (i18n "undated") "lang" $locale) -}}
+{{- if not $page.Date.IsZero }}{{ $date = printf "<time datetime=\"%s\">%s</time>" ($page.Date.Format "2006-01-02T15:04:05Z07:00") (partial "ui/supporting.html" (dict "text" ($page.Date.Format "2006.01.02") "lang" $locale)) }}{{ end -}}
+{{- $metaItems := slice (partial "ui/supporting.html" (dict "text" $type.label "lang" $locale)) -}}
+{{- if gt $page.ReadingTime 0 }}{{ $metaItems = $metaItems | append (partial "ui/supporting.html" (dict "text" (i18n "readingTime" (dict "Count" $page.ReadingTime)) "lang" $locale)) }}{{ end -}}
+{{- $contentLanguage := index (split (lower $language) "-") 0 -}}
+{{- $uiLanguage := index (split (lower $locale) "-") 0 -}}
+{{- if ne $contentLanguage $uiLanguage -}}
+  {{- $languageLabel := upper $contentLanguage -}}
+  {{- if eq $contentLanguage "zh" }}{{ $languageLabel = "中文" }}{{ end -}}
+  {{- $metaItems = $metaItems | append (partial "ui/supporting.html" (dict "text" $languageLabel "lang" $locale)) -}}
+{{- end -}}
+{{- $meta := "" -}}
+{{- range $index, $item := $metaItems -}}
+  {{- $separator := "" -}}
+  {{- if gt $index 0 }}{{ $separator = "<span class=\"meta-separator\" aria-hidden=\"true\">·</span>" }}{{ end -}}
+  {{- $meta = printf "%s<span class=\"post-meta-item\">%s%s</span>" $meta $separator $item -}}
+{{- end -}}
+{{- $coverHTML := "" -}}
+{{- with $cover }}{{ $coverHTML = partial "ui/cover.html" (dict "content" (. | safeHTML)) }}{{ end -}}
+{{- $inner := printf "<div class=\"post-date\" lang=\"%s\">%s</div><div class=\"post-copy\"><div class=\"post-title-summary\">%s%s</div><div class=\"post-meta\" lang=\"%s\">%s</div></div>%s" $locale $date $title $summary $locale $meta $coverHTML -}}
+<article id="{{ $id }}" class="post-card{{ if $feature }} featured-post{{ end }}{{ if $cover }} has-cover{{ else }} is-text-only{{ end }}" data-post-type="{{ $type.value }}" data-search-url="{{ $page.RelPermalink }}" lang="{{ $language }}">
+  {{ partial "ui/card-link.html" (dict "label" $page.Title "href" $page.RelPermalink "content" ($inner | safeHTML) "feature" $feature) }}
+</article>

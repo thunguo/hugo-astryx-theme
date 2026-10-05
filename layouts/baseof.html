@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="{{ partial "page-language.html" . }}" data-astryx-theme="astryx">
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body>
+    {{ partial "ui/shell-open.html" . }}
+    {{ block "main" . }}{{ end }}
+    {{ partial "footer.html" . }}
+    {{ partial "ui/shell-close.html" . }}
+    {{ partial "scripts.html" . }}
+  </body>
+</html>

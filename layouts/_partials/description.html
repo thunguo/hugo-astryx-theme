@@ -1,0 +1,7 @@
+{{- $description := .Site.Params.astryx.description | default .Site.Params.description -}}
+{{- if .IsPage -}}
+  {{- $description = .Description | default (.Summary | plainify) | default $description -}}
+{{- else -}}
+  {{- with .Description }}{{ $description = . }}{{ end -}}
+{{- end -}}
+{{- return ($description | plainify | htmlUnescape | strings.TrimSpace | truncate 180) -}}

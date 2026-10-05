@@ -1,0 +1,50 @@
+{{- $settings := .Site.Params.astryx.comments | default dict -}}
+{{- $enabled := and .IsPage $settings.enabled (in ($settings.sections | default (slice "posts" "notes")) .Section) -}}
+{{- if and .IsPage $settings.enabled (isset .Params "comments") }}{{ $enabled = .Params.comments }}{{ end -}}
+{{- if $enabled -}}
+  {{- if not (and $settings.repo $settings.repoID $settings.category $settings.categoryID) -}}
+    {{- warnf "Astryx comments enabled, but repo, repoID, category, and categoryID must all be configured. Comments are omitted until these values are supplied." -}}
+  {{- else -}}
+    {{- $locale := partial "ui-locale.html" . -}}
+    {{- $labels := dict "title" "评论" "hint" "在 GitHub Discussions 中交流。" "idle" "分享你的想法，或补充一个细节。" "load" "加载评论" "loading" "正在加载评论…" "error" "评论暂时无法加载。" "retry" "重新加载" "browse" "在 GitHub 查看讨论" "noscript" "请启用 JavaScript 读取评论，或前往 GitHub Discussions。" -}}
+    {{- if strings.HasPrefix (lower $locale) "en" }}{{ $labels = dict "title" "Discussion" "hint" "Continue the conversation on GitHub Discussions." "idle" "Share a thought, or add a useful detail." "load" "Load comments" "loading" "Loading comments…" "error" "Comments could not be loaded." "retry" "Try again" "browse" "View discussions on GitHub" "noscript" "Enable JavaScript to read comments, or visit GitHub Discussions." }}{{ end -}}
+    {{- $mapping := $settings.mapping | default "pathname" -}}
+    {{- $term := .Params.giscusTerm | default .Params.translationKey | default .RelPermalink -}}
+    {{- if eq $mapping "number" }}{{ $term = .Params.giscusNumber | default $settings.term | default "" }}{{ end -}}
+    {{- $strict := true -}}
+    {{- if isset $settings "strict" }}{{ $strict = $settings.strict }}{{ end -}}
+    {{- $reactions := true -}}
+    {{- if isset $settings "reactionsenabled" }}{{ $reactions = $settings.reactionsEnabled }}{{ end -}}
+    {{- $customTheme := true -}}
+    {{- if isset $settings "customtheme" }}{{ $customTheme = $settings.customTheme }}{{ end -}}
+    {{- $themeLight := "light" -}}
+    {{- $themeDark := "dark" -}}
+    {{- if $customTheme }}{{ $themeLight = "giscus/astryx-light.css" | absURL }}{{ $themeDark = "giscus/astryx-dark.css" | absURL }}{{ end -}}
+    {{- with $settings.themeLight }}{{ $themeLight = . }}{{ end -}}
+    {{- with $settings.themeDark }}{{ $themeDark = . }}{{ end -}}
+    {{- $lang := $settings.lang | default "auto" -}}
+    {{- if eq $lang "auto" }}{{ if strings.HasPrefix (lower $locale) "en" }}{{ $lang = "en" }}{{ else }}{{ $lang = "zh-CN" }}{{ end }}{{ end -}}
+    {{- $loading := $settings.loading | default "lazy" -}}
+    {{- if not (in (slice "lazy" "eager" "manual") $loading) }}{{ warnf "Astryx comments.loading must be lazy, eager, or manual; using lazy." }}{{ $loading = "lazy" }}{{ end -}}
+    {{- $config := dict "repo" $settings.repo "repoId" $settings.repoID "category" $settings.category "categoryId" $settings.categoryID "mapping" $mapping "term" $term "strict" $strict "reactionsEnabled" $reactions "emitMetadata" ($settings.emitMetadata | default false) "inputPosition" ($settings.inputPosition | default "top") "loading" $loading "lang" $lang "themeLight" $themeLight "themeDark" $themeDark "labels" $labels -}}
+    {{- $githubURL := printf "https://github.com/%s/discussions" $settings.repo -}}
+<section id="comments" class="article-comments" aria-labelledby="comments-heading" data-comments data-state="idle" lang="{{ $locale }}">
+  {{ partial "ui/divider.html" }}
+  <header class="comments-header">
+    <div class="comments-heading">
+      <h2 id="comments-heading">{{ $labels.title }}</h2>
+      {{ partial "ui/supporting.html" (dict "text" $labels.hint "lang" $locale) }}
+    </div>
+    <a class="comments-github" href="{{ $githubURL }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $labels.browse }}">GitHub <span aria-hidden="true">↗</span></a>
+  </header>
+  <div class="comments-placeholder" data-comments-placeholder>
+    <span class="comments-spinner" aria-hidden="true"></span>
+    <p class="comments-status" role="status" aria-live="polite" data-comments-status>{{ $labels.idle }}</p>
+    <span class="comments-action">{{ partial "ui/action-button.html" (dict "label" $labels.load) }}</span>
+  </div>
+  <div class="giscus" aria-label="{{ $labels.title }}" data-comments-host></div>
+  <noscript><p class="comments-noscript">{{ $labels.noscript }} <a href="{{ $githubURL }}">GitHub Discussions ↗</a></p></noscript>
+  <script type="application/json" data-comments-config>{{ $config | jsonify | safeJS }}</script>
+</section>
+  {{- end -}}
+{{- end -}}

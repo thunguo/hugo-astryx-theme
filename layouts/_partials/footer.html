@@ -1,0 +1,8 @@
+{{- $label := i18n "allPosts" -}}
+{{- if .Site.GetPage "/archives" }}{{ $label = i18n "archives" }}{{ end -}}
+{{- $links := partial "ui/link.html" (dict "label" $label "href" (partial "feature-url.html" (dict "site" .Site "path" "/archives"))) -}}
+{{- with .Site.GetPage "/tags" }}{{ if gt (len .Pages) 0 }}{{ $links = printf "%s%s" $links (partial "ui/link.html" (dict "label" (i18n "tags") "href" .RelPermalink)) }}{{ end }}{{ end -}}
+{{- with .Site.Home.OutputFormats.Get "RSS" }}{{ $links = printf "%s%s" $links (partial "ui/link.html" (dict "label" "RSS" "href" .RelPermalink)) }}{{ end -}}
+{{- $copyright := partial "ui/supporting.html" (dict "text" (printf "© %d %s" now.Year (partial "site-author.html" .Site)) "lang" (partial "ui-locale.html" .)) -}}
+{{- $content := printf "<footer class=\"site-footer\" lang=\"%s\"><div class=\"site-footer-inner\">%s<nav aria-label=\"%s\">%s</nav></div></footer>" (partial "ui-locale.html" .) $copyright (i18n "footerNavigation" | htmlEscape) $links -}}
+{{ partial "ui/section.html" (dict "content" ($content | safeHTML)) }}

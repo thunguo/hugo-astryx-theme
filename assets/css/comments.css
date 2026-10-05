@@ -1,0 +1,133 @@
+.article-comments {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.comments-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.comments-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.comments-heading h2 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+}
+
+.comments-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+  text-decoration: none;
+}
+
+.comments-github:is(:hover, :focus-visible, :active) {
+  color: var(--color-text-primary);
+}
+
+.comments-placeholder {
+  display: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-container);
+  background: var(--color-background-surface);
+}
+
+.article-comments[data-comments-enhanced="true"] .comments-placeholder {
+  display: flex;
+}
+
+.comments-status,
+.comments-noscript {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.comments-status {
+  flex: 1 1 180px;
+}
+
+.comments-action {
+  flex-shrink: 0;
+}
+
+.comments-spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-text-secondary);
+  border-radius: 50%;
+}
+
+.article-comments[data-state="loading"] .comments-spinner {
+  display: inline-block;
+  animation: comments-spin 800ms linear infinite;
+}
+
+.article-comments[data-comments-enhanced="true"][data-state="ready"] .comments-placeholder {
+  display: none;
+}
+
+.article-comments[data-state="loading"] .comments-action button { cursor: progress; }
+
+.article-comments .giscus {
+  min-width: 0;
+}
+
+.article-comments .giscus-frame {
+  display: block;
+  width: 100%;
+  border: 0;
+  color-scheme: normal;
+}
+
+.article-comments:not([data-state="ready"]) .giscus-frame {
+  /* Keep giscus measurable so it can post resizeHeight while loading. */
+  visibility: hidden;
+  height: 0 !important;
+}
+
+.article-comments noscript + script {
+  display: none;
+}
+
+@keyframes comments-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 479px) {
+  .comments-placeholder { padding: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article-comments[data-state="loading"] .comments-spinner { animation: none; }
+}
+
+@media print {
+  .article-comments { display: none; }
+}

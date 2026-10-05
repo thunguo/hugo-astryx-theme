@@ -1,0 +1,12 @@
+{{- $page := .page -}}
+{{- $language := partial "page-language.html" $page -}}
+{{- $summary := $page.Description | default ($page.Summary | plainify) | plainify | htmlUnescape | truncate 160 -}}
+<article class="search-entry" data-search-url="{{ $page.RelPermalink }}" lang="{{ $language }}">
+  <a href="{{ $page.RelPermalink }}">
+    <div class="search-hit">
+      <span class="search-hit-title">{{ $page.Title }}</span>
+      <span class="search-hit-excerpt">{{ $summary }}</span>
+      <span class="search-hit-meta"><span>{{ if hasPrefix $language "en" }}EN{{ else }}中文{{ end }}</span>{{ if not $page.Date.IsZero }}<time datetime="{{ $page.Date.Format "2006-01-02" }}">{{ $page.Date.Format "2006-01-02" }}</time>{{ end }}</span>
+    </div>
+  </a>
+</article>

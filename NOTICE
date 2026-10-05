@@ -1,0 +1,62 @@
+Hugo Astryx Theme — third-party notices
+
+This is an independent Hugo adaptation. It is not an official Meta product.
+
+Astryx
+------
+Official repository: https://github.com/facebook/astryx
+Official website: https://astryx.atmeta.com/
+Reference commit: c3016f8f054b917cdaa1d888c8023426521adfb6
+Astryx Core and CLI package version: 0.6.5
+
+This project uses Astryx Core components and generated styles, and adapts code
+from the official Astryx documentation site at the reference commit above:
+
+- apps/docsite/src/themes/astryxTheme.ts
+  The official website theme, adapted in src/site-theme.mjs.
+- apps/docsite/src/components/blog/BlogCoverArt.tsx
+  Decorative fallback blog cover artwork, adapted in src/cover-art.jsx.
+- apps/docsite/src/components/logos.tsx
+  Astryx mark geometry, adapted in src/brand.jsx and the cover artwork.
+
+The official blog and shared navigation components also informed the Hugo
+adaptation. Astryx names and marks identify the source design system; this
+notice does not imply sponsorship or endorsement by Meta.
+
+Upstream license (https://github.com/facebook/astryx/blob/c3016f8f054b917cdaa1d888c8023426521adfb6/LICENSE):
+
+MIT License
+
+Copyright (c) 2026 Meta Platforms, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Figtree
+-------
+The self-hosted Figtree variable font is distributed under the SIL Open Font
+License 1.1. Its license is included at assets/fonts/OFL.txt. The font is
+provided by the @fontsource-variable/figtree package during the theme build.
+
+Other dependencies
+------------------
+Full license texts for the bundled React, React DOM, Scheduler, Stylex,
+FormatJS, and intl-messageformat runtime code are included in
+THIRD_PARTY_LICENSES.txt. Build tools and installed node_modules are not
+distributed with the blog template.
+Generated JavaScript legal notice files are distributed alongside the assets.

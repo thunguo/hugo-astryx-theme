@@ -1,0 +1,5 @@
+{{- $image := partial "image-source.html" (dict "page" .PageInner "path" .Destination "width" 1400) -}}
+{{- if .IsBlock -}}<figure class="prose-image">{{- end -}}
+<a href="{{ $image.original }}" data-lightbox{{ with .Title }} data-lightbox-caption="{{ . }}"{{ end }}>
+<img src="{{ $image.src }}" alt="{{ .Text | plainify }}"{{ if $image.width }} width="{{ $image.width }}" height="{{ $image.height }}" srcset="{{ $image.srcset }}" sizes="(max-width: 800px) calc(100vw - 48px), 752px"{{ end }} loading="lazy" decoding="async"{{ if not .IsBlock }}{{ with .Title }} title="{{ . }}"{{ end }}{{ end }}>
+</a>{{- if .IsBlock -}}{{- with .Title -}}<figcaption>{{ . }}</figcaption>{{- end -}}</figure>{{- end -}}

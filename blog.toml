@@ -1,0 +1,85 @@
+# Personal blog configuration. Change title and replace assets/images/logo.jpg.
+# GitHub Pages supplies the production URL automatically during deployment.
+baseURL = "https://example.org/"
+title = "Thunguo's Blog"
+defaultContentLanguage = "zh-cn"
+hasCJKLanguage = true
+enableRobotsTXT = true
+summaryLength = 90
+
+[languages.zh-cn]
+locale = "zh-CN"
+
+[pagination]
+pagerSize = 8
+
+[params.astryx]
+uiLocale = "zh-CN"
+logo = "images/logo.jpg"
+description = "记录与思考。"
+mainSections = ["posts"]
+showToc = true
+defaultMode = "system"
+# intro = "Optional homepage heading; otherwise title is used."
+
+[params.astryx.author]
+# Empty: GitHub repository owner on Pages, site title during local preview.
+name = ""
+
+[params.astryx.comments]
+enabled = false
+sections = ["posts"]
+repo = ""
+repoID = ""
+category = ""
+categoryID = ""
+mapping = "pathname"
+strict = true
+reactionsEnabled = true
+emitMetadata = false
+inputPosition = "top"
+loading = "lazy"
+lang = "auto"
+customTheme = true
+
+[[menus.main]]
+name = "文章"
+pageRef = "/posts"
+weight = 10
+
+[[menus.main]]
+name = "归档"
+pageRef = "/archives"
+weight = 20
+
+[taxonomies]
+tag = "tags"
+
+[outputs]
+home = ["HTML", "RSS", "JSON"]
+section = ["HTML", "RSS"]
+taxonomy = ["HTML", "RSS"]
+term = ["HTML", "RSS"]
+
+[services.rss]
+limit = 30
+
+[markup.goldmark.parser.attribute]
+block = true
+title = true
+
+[markup.goldmark.renderer]
+unsafe = false
+
+[markup.highlight]
+noClasses = false
+lineNos = false
+guessSyntax = false
+
+[markup.tableOfContents]
+startLevel = 2
+endLevel = 3
+ordered = false
+
+[caches.images]
+dir = ":cacheDir/images"

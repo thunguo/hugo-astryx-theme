@@ -1,0 +1,8 @@
+{{- $image := partial "image-source.html" (dict "page" .page "path" .path "width" 1400) -}}
+{{- $imageHTML := printf "<a href=\"%s\" data-lightbox><img src=\"%s\" alt=\"%s\" decoding=\"async\" fetchpriority=\"high\"" ($image.original | htmlEscape) ($image.src | htmlEscape) (.page.Params.coverAlt | default .page.Title | htmlEscape) -}}
+{{- if $image.width }}{{ $imageHTML = printf "%s width=\"%d\" height=\"%d\" srcset=\"%s\" sizes=\"(max-width: 800px) calc(100vw - 48px), 752px\"" $imageHTML $image.width $image.height ($image.srcset | htmlEscape) }}{{ end -}}
+{{- $imageHTML = printf "%s></a>" $imageHTML -}}
+<figure class="{{ .class | default "article-cover" }}">
+  {{ partial "ui/cover.html" (dict "content" ($imageHTML | safeHTML)) }}
+  {{ with .page.Params.coverCaption }}<figcaption>{{ . }}</figcaption>{{ end }}
+</figure>

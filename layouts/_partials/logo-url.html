@@ -1,0 +1,13 @@
+{{- $url := "" -}}
+{{- with .Site.Params.astryx.logo -}}
+  {{- $path := . -}}
+  {{- $image := partial "image-source.html" (dict "page" $.Site.Home "path" $path "width" 128) -}}
+  {{- $url = $image.src -}}
+  {{- $resource := $.Site.Home.Resources.GetMatch $path -}}
+  {{- if not $resource }}{{ $resource = resources.Get (strings.TrimPrefix "/" $path) }}{{ end -}}
+  {{- if and $resource (eq $resource.ResourceType "image") (in (slice "jpeg" "png" "webp" "gif" "tiff" "bmp") $resource.MediaType.SubType) -}}
+    {{- $logo := $resource.Resize (printf "%dx png" (math.Min 128 $resource.Width | int)) -}}
+    {{- $url = $logo.RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+{{- return $url -}}

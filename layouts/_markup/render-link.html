@@ -1,0 +1,6 @@
+{{- $text := .Text -}}
+{{- /* A Markdown linked image already has a destination; remove only the image hook's own anchor to avoid nested links. */ -}}
+{{- if strings.Contains $text "data-lightbox" -}}
+  {{- $text = replaceRE `<a href="[^"]*" data-lightbox[^>]*>\s*(<img[^>]*>)\s*</a>` "$1" $text -}}
+{{- end -}}
+<a href="{{ partial "link-url.html" (dict "page" .PageInner "destination" .Destination) }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ $text | safeHTML }}</a>{{- /* Keep adjacent Markdown text adjacent. */ -}}

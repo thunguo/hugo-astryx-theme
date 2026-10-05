@@ -1,0 +1,14 @@
+{{- $page := . -}}
+{{- $items := slice -}}
+{{- range .Site.Menus.main -}}
+  {{- $selected := or ($page.IsMenuCurrent "main" .) ($page.HasMenuCurrent "main" .) -}}
+  {{- $href := .URL -}}
+  {{- if .Page -}}
+    {{- $href = .Page.RelPermalink -}}
+    {{- if and (eq .Page.Section $page.Section) (ne $page.Section "") }}{{ $selected = true }}{{ end -}}
+  {{- else -}}
+    {{- $href = partial "link-url.html" (dict "page" $page "destination" $href) -}}
+  {{- end -}}
+  {{- $items = $items | append (dict "label" .Name "href" $href "selected" $selected) -}}
+{{- end -}}
+{{- return $items -}}

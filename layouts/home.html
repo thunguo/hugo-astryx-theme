@@ -1,0 +1,33 @@
+{{ define "main" }}
+{{- $pages := where .Site.RegularPages "Section" "in" (.Site.Params.astryx.mainSections | default (slice "posts")) -}}
+{{- $pages = (where $pages "Draft" false).ByDate.Reverse -}}
+{{- $types := slice -}}
+{{- $counts := newScratch -}}
+{{- $labels := dict -}}
+{{- $firsts := dict -}}
+{{- range $pages -}}
+  {{- $type := partial "post-type.html" . -}}
+  {{- $types = $types | append $type.value -}}
+  {{- $counts.Set $type.value (add ($counts.Get $type.value | default 0) 1) -}}
+  {{- $labels = merge $labels (dict $type.value $type.label) -}}
+  {{- if not (index $firsts $type.value) }}{{ $firsts = merge $firsts (dict $type.value (printf "post-%s" (substr (crypto.SHA256 .RelPermalink) 0 12))) }}{{ end -}}
+{{- end -}}
+{{- $types = $types | uniq -}}
+{{- $filterData := slice (dict "value" "all" "label" (i18n "allPosts") "count" (len $pages)) -}}
+{{- range $types }}{{ $filterData = $filterData | append (dict "value" . "label" (index $labels .) "count" ($counts.Get .)) }}{{ end -}}
+{{- $content := partial "page-intro.html" (dict "page" . "title" (.Site.Params.astryx.intro | default .Site.Title) "description" .Site.Params.astryx.description "lang" (partial "ui-locale.html" .) "id" "latest-title" "class" "home-intro") -}}
+{{- with .Content }}{{ $content = printf "%s<div class=\"prose section-intro\">%s</div>" $content . }}{{ end -}}
+{{- $controls := "" -}}
+{{- if gt (len $types) 1 -}}
+  {{- $filters := printf "<a class=\"filter-link is-current\" href=\"#latest-title\">%s</a>" (i18n "allPosts" | htmlEscape) -}}
+  {{- range $types -}}
+    {{- $filters = printf "%s<a class=\"filter-link\" href=\"#%s\">%s</a>" $filters (index $firsts .) (index $labels . | htmlEscape) -}}
+  {{- end -}}
+  {{- $controls = printf "<nav id=\"astryx-filters\" class=\"post-filters\" aria-label=\"%s\" lang=\"%s\">%s</nav>" (i18n "filterPosts" | htmlEscape) (partial "ui-locale.html" .) $filters -}}
+{{- end -}}
+{{- $cards := "" -}}
+{{- range $index, $page := $pages }}{{ $cards = printf "%s%s" $cards (partial "post-card.html" (dict "page" $page "feature" (eq $index 0))) }}{{ else }}{{ $cards = printf "<p class=\"empty-state\">%s</p>" (i18n "noPosts" | htmlEscape) }}{{ end -}}
+{{- $content = printf "<div class=\"blog-index home-index\">%s<div class=\"post-feed\"><div class=\"post-feed-header\"><div class=\"feed-label\">%s</div>%s</div><div class=\"post-grid\">%s</div></div></div>" $content (partial "ui/supporting.html" (dict "text" (i18n "latestPosts") "lang" (partial "ui-locale.html" .))) $controls $cards -}}
+{{ partial "ui/section.html" (dict "content" ($content | safeHTML)) }}
+<script id="astryx-filter-data" type="application/json">{{ $filterData | jsonify | safeJS }}</script>
+{{ end }}

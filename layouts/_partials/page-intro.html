@@ -1,0 +1,7 @@
+{{- $page := .page -}}
+{{- $language := .lang | default (partial "page-language.html" $page) -}}
+<header class="page-intro{{ with .class }} {{ . }}{{ end }}" lang="{{ $language }}">
+  {{- with .kicker }}<p class="page-kicker">{{ . }}</p>{{ end -}}
+  <div class="page-title"{{ with .id }} id="{{ . }}"{{ end }}>{{ partial "ui/page-title.html" (dict "text" (.title | default $page.Title) "lang" $language) }}</div>
+  {{- with .description | default $page.Description }}<div class="page-description">{{ partial "ui/description.html" (dict "text" . "lang" $language) }}</div>{{ end -}}
+</header>

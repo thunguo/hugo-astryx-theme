@@ -1,0 +1,31 @@
+{
+  "name": "hugo-astryx-theme",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "A Hugo blog theme using the official Astryx website theme and real Astryx components.",
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "prepare:theme": "node scripts/build-theme.mjs",
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/dev.mjs",
+    "check": "node scripts/check.mjs",
+    "test:unit": "node --test tests/search.test.mjs tests/render.test.mjs",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "@astryxdesign/core": "0.6.5",
+    "@fontsource-variable/figtree": "5.3.0",
+    "@stylexjs/stylex": "0.19.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@astryxdesign/cli": "0.6.5",
+    "@playwright/test": "1.63.0",
+    "esbuild": "0.28.2"
+  }
+}
