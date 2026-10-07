@@ -60,3 +60,10 @@ FormatJS, and intl-messageformat runtime code are included in
 THIRD_PARTY_LICENSES.txt. Build tools and installed node_modules are not
 distributed with the blog template.
 Generated JavaScript legal notice files are distributed alongside the assets.
+
+KaTeX
+-----
+Formula layout is rendered by Hugo's embedded KaTeX engine. The bundled
+KaTeX 0.18.4 stylesheet and WOFF2 fonts are distributed under the MIT License;
+see assets/vendor/katex/LICENSE. CSS font sources are limited to WOFF2.
+Upstream: https://github.com/KaTeX/KaTeX

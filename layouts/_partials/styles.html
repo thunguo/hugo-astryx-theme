@@ -7,3 +7,5 @@
   {{- $css := resources.Concat "css/site.css" . | fingerprint "sha384" -}}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
 {{- end -}}
+
+{{ partial "math-styles.html" . }}

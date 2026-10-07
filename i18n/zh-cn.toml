@@ -97,3 +97,6 @@ other = "摄影"
 
 [postType_note]
 other = "笔记"
+
+[mathFormula]
+other = "数学公式"

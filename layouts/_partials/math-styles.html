@@ -1,0 +1,10 @@
+{{- $rendered := .Content -}}
+{{- if .Store.Get "hasMath" -}}
+  {{- range resources.Match "vendor/katex/fonts/*.woff2" }}{{ $published := .RelPermalink }}{{ end -}}
+  {{- range slice "vendor/katex/katex.min.css" "css/math.css" -}}
+    {{- with resources.Get . -}}
+      {{- $css := . | fingerprint "sha384" -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

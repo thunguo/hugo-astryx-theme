@@ -26,6 +26,7 @@
   "devDependencies": {
     "@astryxdesign/cli": "0.6.5",
     "@playwright/test": "1.63.0",
-    "esbuild": "0.28.2"
+    "esbuild": "0.28.2",
+    "katex": "0.18.4"
   }
 }

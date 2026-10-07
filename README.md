@@ -12,6 +12,7 @@ A quiet Hugo blog theme built with real [Astryx](https://astryx.atmeta.com/) com
 - Responsive navigation, live full-text search, article outlines and a photography layout.
 - Reading links with clear footnote returns, and image previews that preserve your place.
 - Hugo Chroma highlighting, language labels, filenames, line numbers and code copying.
+- Mathematical formulas rendered at build time, with self-hosted styles and fonts.
 - Optional [giscus](https://giscus.app/) comments styled to match the theme.
 - Prebuilt assets and self-hosted fonts; everyday use requires only Hugo.
 
@@ -255,6 +256,35 @@ print(json.dumps(data))
 Use `linenostart` to change the first line number. Global defaults belong under Hugo's `[markup.highlight]`. The theme uses CSS classes and inline line numbers so code and numbers scroll together; unsupported languages render as plain text. The copy button copies the original source without line numbers and requires JavaScript. The code itself remains readable without it. Code blocks and tables with horizontal overflow show a subtle edge hint and support keyboard scrolling.
 
 Footnotes include a visible return link. Outline and footnote navigation keep the destination below the header and move keyboard focus with it; scrolling respects reduced-motion preferences.
+
+### Mathematics
+
+Write LaTeX directly in Markdown. Use `$...$` or `\(...\)` inline and `$$...$$` or `\[...\]` for a displayed block:
+
+```markdown
+The identity $e^{i\pi}+1=0$ holds, and \(a^2+b^2=c^2\).
+
+$$
+\int_0^1 x^2\,dx=\frac{1}{3}
+$$
+
+\[
+\sum_{n=1}^{\infty}\frac{1}{n^2}=\frac{\pi^2}{6}
+\]
+```
+
+Formulas render automatically when Hugo builds the site, using its built-in [`transform.ToMath`](https://gohugo.io/functions/transform/tomath/) with `htmlAndMathml` output. Formula pages load bundled KaTeX CSS and fonts from your own site; other pages omit these resources. Rendering needs no client-side JavaScript. MathML supports assistive technology, and long block formulas support horizontal scrolling and keyboard access. Daily writing still requires only Hugo **0.146.0+**.
+
+Ordinary dollar amounts can be interpreted as inline formulas when `$` delimiters pair up. Put dollar text in inline code (for example, `` `$5` ``), or write `&#36;5` in Markdown outside formulas.
+
+To disable formula rendering site-wide, merge this into `blog.toml` or your site's configuration:
+
+```toml
+[markup.goldmark.extensions.passthrough]
+enable = false
+```
+
+Invalid LaTeX or unsupported commands fail the build with the source location so you can fix the expression.
 
 ### Comments with giscus
 

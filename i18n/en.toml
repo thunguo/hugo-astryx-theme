@@ -98,3 +98,6 @@ other = "Photography"
 
 [postType_note]
 other = "Notes"
+
+[mathFormula]
+other = "Mathematical formula"

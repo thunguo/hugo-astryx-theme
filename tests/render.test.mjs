@@ -153,3 +153,89 @@ test('root starter resources, canonical URLs and search work at a deployment sub
     await stat(join(fixture.output, config.galleryURL.replace(/^\/project\//, '')));
   } finally {await rm(fixture.folder, {recursive: true, force: true});}
 });
+
+const mathPassthroughConfig = String.raw`
+[markup.goldmark.extensions.passthrough]
+enable = true
+[markup.goldmark.extensions.passthrough.delimiters]
+block = [['\[', '\]'], ['$$', '$$']]
+inline = [['\(', '\)'], ['$', '$']]
+`;
+
+const mathCode = String.raw`$literal$ $$literal$$ \(literal\) \[literal\]`;
+const mathPage = body => `---\ntitle: Math fixture\ndate: 2020-01-01\nsummary: Server-rendered math fixture.\n---\n\n${body}\n`;
+const mathBody = String.raw`Dollar inline: $x^2+1$.
+
+Parenthesis inline: \(a+b\).
+
+$$
+\frac{1}{2}
+$$
+
+\[
+\sum_{n=1}^{3}n
+\]
+
+Inline code: ` + '`' + mathCode + '`' + '\n\n```text\n' + mathCode + '\n```\n';
+const mathStyles = html => [...html.matchAll(/<link\b[^>]*\bhref="([^"]+)"[^>]*>/g)]
+  .map(match => match[1]).filter(path => /(?:\/katex\.min|\/math)\.[a-f0-9]+\.css$/.test(path));
+
+// One fixture catches four supported delimiters, MathML accessibility, literal
+// code and conditional CSS. Counting actual KaTeX roots avoids matching prose.
+test('math renders on the server while code stays literal and CSS remains conditional', async () => {
+  const fixture = await hugoFixture({config: mathPassthroughConfig, files: {
+    'content/posts/math.md': mathPage(mathBody),
+    'content/posts/code.md': mathPage('Inline code: `' + mathCode + '`\n\n```text\n' + mathCode + '\n```\n'),
+    'content/posts/plain.md': mathPage('An ordinary paragraph.'),
+  }});
+  try {
+    const html = await readFile(join(fixture.output, 'posts/math/index.html'), 'utf8');
+    assert.equal([...html.matchAll(/class="katex"/g)].length, 4);
+    assert.equal([...html.matchAll(/<math(?:\s|>)/g)].length, 4);
+    assert.equal([...html.matchAll(/class="math-block"/g)].length, 2);
+    const sources = [...html.matchAll(/<annotation encoding="application\/x-tex">([\s\S]*?)<\/annotation>/g)]
+      .map(match => match[1].trim());
+    assert.deepEqual(sources, ['x^2+1', 'a+b', String.raw`\frac{1}{2}`, String.raw`\sum_{n=1}^{3}n`]);
+    const codeElements = [...html.matchAll(/<code(?:\s[^>]*)?>([\s\S]*?)<\/code>/g)];
+    assert.equal(codeElements.length, 2);
+    for (const [, code] of codeElements) {
+      assert(!code.includes('class="katex"'));
+      assert(code.includes(mathCode), 'Code delimiters must remain literal');
+    }
+    const styles = mathStyles(html);
+    assert.equal(styles.length, 2, 'A formula page needs local KaTeX and overflow styles');
+    assert(styles.every(path => path.startsWith('/')), 'Math assets must be local');
+    assert(!/<script\b[^>]*\bsrc="[^"]*(?:katex|mathjax)/i.test(html), 'Math needs no client renderer');
+    for (const page of ['code', 'plain']) {
+      const plain = await readFile(join(fixture.output, `posts/${page}/index.html`), 'utf8');
+      assert.equal(mathStyles(plain).length, 0, `${page} must not load math CSS`);
+      assert(!plain.includes('class="katex"'), `${page} must not render math`);
+    }
+  } finally {await rm(fixture.folder, {recursive: true, force: true});}
+});
+
+// Real deployments often use /project/. Verify CSS publications and every
+// relative font URL, rather than assuming a copied font directory is sufficient.
+test('math styles and their local fonts work under a deployment subpath', async () => {
+  const fixture = await hugoFixture({baseURL: 'https://example.org/blog/', config: mathPassthroughConfig,
+    files: {'content/posts/math.md': mathPage(mathBody)}});
+  try {
+    const html = await readFile(join(fixture.output, 'posts/math/index.html'), 'utf8');
+    const styles = mathStyles(html);
+    assert.equal(styles.length, 2);
+    const katexPath = styles.find(path => path.includes('/katex.min.'));
+    for (const path of styles) {
+      assert(path.startsWith('/blog/'));
+      await stat(join(fixture.output, path.slice('/blog/'.length)));
+    }
+    const css = await readFile(join(fixture.output, katexPath.slice('/blog/'.length)), 'utf8');
+    const fonts = [...css.matchAll(/url\((?:["']?)([^)"']+)(?:["']?)\)/g)].map(match => match[1]);
+    assert(fonts.length > 0, 'The local KaTeX stylesheet must reference its fonts');
+    for (const font of fonts) {
+      assert(!/^(?:[a-z]+:|\/)/i.test(font), `Font URL must remain relative: ${font}`);
+      const url = new URL(font, `https://example.org${katexPath}`).pathname;
+      assert(url.startsWith('/blog/'));
+      await stat(join(fixture.output, url.slice('/blog/'.length)));
+    }
+  } finally {await rm(fixture.folder, {recursive: true, force: true});}
+});

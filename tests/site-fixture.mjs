@@ -18,6 +18,10 @@ const technicalBody = `脚本处理复杂数据时，要保留明确的输入边
   '```python {filename="notes_to_json.py" linenos=true hl_lines="12-14"}\n' + code + '\n```\n\n' +
   `## 重复运行\n\n${paragraph.repeat(4)}\n\n脚本中的行号需要明确解释。[^line]\n\n` +
   `| 字段 | 含义 |\n| --- | --- |\n| title | 标题 |\n\n> 输出应当可以检查。\n\n## 结果\n\n${paragraph.repeat(3)}\n\n[^line]: 这里的行号按原始输入计算。\n`;
+const mathBrowserBody = '\n\nInline math: $E=mc^2$.\n\n$$\n' +
+  Array.from({length: 32}, (_, index) => `x_{${index}}`).join(' + ') + '\n$$\n';
+
+
 const englishBody = 'A notebook keeps a reading question near its source.\n\n## A precise observation\n\n' +
   'This paragraph tests readable English text, without relying on a personal story. '.repeat(12) +
   '\n\n## A small revision\n\nA note can be revised after another reading.\n';
@@ -25,7 +29,7 @@ const englishBody = 'A notebook keeps a reading question near its source.\n\n## 
 // Short synthetic entries retain the existing test matrix: six post types,
 // mixed language, related translations, utility exclusions and three images.
 export const fixtureEntries = [
-  {slug: 'small-scripts-with-care', title: '脚本测试：输入与结果', language: 'zh-CN', section: 'posts', postType: 'technical', body: technicalBody, tags: ['Python', '测试']},
+  {slug: 'small-scripts-with-care', title: '脚本测试：输入与结果', language: 'zh-CN', section: 'posts', postType: 'technical', body: technicalBody + mathBrowserBody, tags: ['Python', '测试']},
   {slug: 'a-working-notebook', title: 'A working notebook', language: 'en', section: 'posts', postType: 'essay', body: englishBody, tags: ['Reading']},
   {slug: 'where-the-path-turns', title: '一段观察', language: 'zh-CN', section: 'posts', postType: 'essay', body: '观察需要一个明确的对象。'},
   {slug: 'a-question-that-needs-room', title: '这是用于检查很长标题在不同屏幕中如何换行而不会破坏阅读布局的一篇测试文章', language: 'zh-CN', section: 'posts', postType: 'essay', body: '标题换行测试。'},

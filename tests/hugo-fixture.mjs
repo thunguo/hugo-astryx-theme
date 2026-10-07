@@ -35,6 +35,13 @@ wrapStandAloneImageWithinParagraph = false
 [markup.goldmark.parser.attribute]
 block = true
 title = true
+[markup.goldmark.extensions.passthrough]
+enable = true
+
+[markup.goldmark.extensions.passthrough.delimiters]
+block = [['\\[', '\\]'], ['$$', '$$']]
+inline = [['\\(', '\\)'], ['$', '$']]
+
 [markup.highlight]
 noClasses = false
 [[module.mounts]]

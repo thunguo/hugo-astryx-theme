@@ -9,6 +9,13 @@ defaultMode = "system"
 [markup.goldmark.parser]
 wrapStandAloneImageWithinParagraph = false
 
+[markup.goldmark.extensions.passthrough]
+enable = true
+
+[markup.goldmark.extensions.passthrough.delimiters]
+block = [['\[', '\]'], ['$$', '$$']]
+inline = [['\(', '\)'], ['$', '$']]
+
 [markup.highlight]
 noClasses = false
 

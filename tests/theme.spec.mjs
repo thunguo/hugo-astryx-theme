@@ -263,3 +263,35 @@ test('reduced motion, phone search and table of contents preserve a calm reading
   await link.click();
   await expect.poll(() => page.evaluate(hash => Math.round(document.getElementById(decodeURIComponent(hash.slice(1))).getBoundingClientRect().top), hash)).toBe(72);
 });
+
+test('server-rendered math stays readable without JavaScript and isolates narrow-screen overflow', async ({browser}) => {
+  const context = await browser.newContext({javaScriptEnabled: false, viewport: {width: 320, height: 812}});
+  const page = await context.newPage();
+  const failures = [];
+  page.on('response', response => {if (response.status() >= 400) failures.push(response.url());});
+  await page.goto(`http://127.0.0.1:4174${chinese.url}`);
+  await page.evaluate(() => document.fonts.ready);
+  await expect(page.locator('.prose .katex').first()).toBeVisible();
+  await expect(page.locator('.prose math').first()).toBeAttached();
+  const block = page.locator('.math-block').first();
+  await expect(block).toHaveAttribute('role', 'region');
+  await expect(block).toHaveAttribute('tabindex', '0');
+  await expect(block).toHaveAttribute('aria-label', /.+/);
+  const bounds = await block.evaluate(node => ({
+    client: node.clientWidth, scroll: node.scrollWidth,
+    left: node.getBoundingClientRect().left, right: node.getBoundingClientRect().right,
+    page: document.documentElement.scrollWidth, screen: innerWidth,
+    overflow: getComputedStyle(node).overflowX,
+  }));
+  expect(bounds.scroll).toBeGreaterThan(bounds.client + 1);
+  expect(bounds.overflow).toBe('auto');
+  expect(bounds.left).toBeGreaterThanOrEqual(0);
+  expect(bounds.right).toBeLessThanOrEqual(bounds.screen + 1);
+  expect(bounds.page).toBeLessThanOrEqual(bounds.screen + 1);
+  await block.focus();
+  await expect(block).toBeFocused();
+  await block.evaluate(node => {node.scrollLeft = node.scrollWidth;});
+  expect(await block.evaluate(node => node.scrollLeft)).toBeGreaterThan(0);
+  expect(failures).toEqual([]);
+  await context.close();
+});

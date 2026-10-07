@@ -1,0 +1,13 @@
+{{- $options := dict "output" "htmlAndMathml" "displayMode" (eq .Type "block") -}}
+{{- with try (transform.ToMath .Inner $options) -}}
+  {{- with .Err -}}
+    {{- errorf "Unable to render formula at %s: %s" $.Position . -}}
+  {{- else -}}
+    {{- $.Page.Store.Set "hasMath" true -}}
+    {{- if eq $.Type "block" -}}
+      <div class="math-block" tabindex="0" role="region" aria-label="{{ i18n "mathFormula" }}">{{ .Value }}</div>
+    {{- else -}}
+      {{- .Value -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
